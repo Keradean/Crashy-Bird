@@ -13,31 +13,32 @@ public class InputHandler : MonoBehaviour
     [SerializeField] private string jump = "Jump"; // Private Variable für den Namen der Jump-Action || Standart
  
     private InputAction jumpAction; // Referenz zur Jump Action 
+    private InputActionMap actionMap; // Cache für bessere Performance...
 
     public bool JumpTriggered { get; private set; } // öffentlich lesbare, aber privat setzbare Eigenschaft | Wurde Jump gerade gedrückt? 
 
     private void Awake()
     {
-        InputActionMap mapReference = playerControls.FindActionMap(actionMapName);
+        actionMap = playerControls.FindActionMap(actionMapName);
 
-        jumpAction = mapReference.FindAction(jump);
+        jumpAction = actionMap.FindAction(jump);
 
-        InputEvents(); 
+        SetupInputEvents(); 
     }
 
-    private void InputEvents()
+    private void SetupInputEvents()
     {
-        jumpAction.performed += inputInfo => JumpTriggered = true;
-        jumpAction.canceled += inputInfo => JumpTriggered = false;
+        jumpAction.performed += ctx => JumpTriggered = true;
+        jumpAction.canceled += ctx => JumpTriggered = false;
     }
 
     private void OnEnable()
     {
-        playerControls.FindActionMap(actionMapName).Enable(); 
+        actionMap?.Enable(); //playerControls.FindActionMap(actionMapName).Enable(); 
     }
 
     private void OnDisable()
     {
-        playerControls.FindActionMap(actionMapName).Disable();
+        actionMap?.Disable(); //playerControls.FindActionMap(actionMapName).Disable();
     }
 }
